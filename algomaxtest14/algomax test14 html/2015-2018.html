@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <hr style="height:12px;color:DodgerBlue">
+                <h1 style="color:DodgerBlue;">Movies From (2015-2018)</h1>
+                    <input class="form-control me-2" type="search" placeholder="movie name" id="search">
+                    <button class="btn btn-outline-primary" onclick="searchmovies()">Search</button>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>Cast</th>
+                        <th>Year</th>
+                    </tr>
+                    <tr>
+                        <tbody id="result">
+
+                        </tbody>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-2">
+                <select name="" id="filter" style="margin-top: 100px;">
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+            </select>
+                <button class="btn btn-outline-primary" type="submit" onclick="filteryear()">Filter</button>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script>
+    var movies=[]
+    fetch("http://127.0.0.1:8000").then(res => res.json()).then(sort =>{
+        for (let movie of sort.sort){
+            movies.push(movie)
+        }
+        return populatevalues(sort)
+    })
+    function searchmovies(){
+        let taskname=document.querySelector("#search").value
+        let fmovie=movies.filter(m=>m.title.includes(taskname))
+        populate(fmovie)
+    }
+    function populatevalues(sort) {
+        let htmldata = ``
+        for (let movie of sort.sort) {
+            htmldata += `
+                <tr>
+                     <td>${movie.title}</td>
+                     <td>${movie.genres}</td>
+                     <td>${movie.cast}</td>
+                     <td>${movie.year}</td>
+                </tr>
+             `
+
+        }
+        document.querySelector("#result").innerHTML = htmldata
+    }
+    function filteryear(){
+        let filtervalue=document.querySelector("#filter").value
+        console.log(filtervalue);
+        fetch(`http://127.0.0.1:8000/search?year=${filtervalue}`).
+        then(res => res.json()).
+        then(sort=>populatevalues(sort))
+    }
+    function populate(sort) {
+        let htmldata = ``
+        for (let movie of sort) {
+            htmldata += `
+                <tr>
+                     <td>${movie.title}</td>
+                     <td>${movie.genres}</td>
+                     <td>${movie.cast}</td>
+                     <td>${movie.year}</td>
+                </tr>
+             `
+        }
+        document.querySelector("#result").innerHTML = htmldata
+    }
+</script>
+
+
+</html>
